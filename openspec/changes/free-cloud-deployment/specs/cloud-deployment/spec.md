@@ -19,13 +19,18 @@ The system SHALL have Docker Engine and Docker Compose installed on the VM such 
 - **WHEN** `docker-compose up -d` is run in the project root
 - **THEN** all five services (redis, minio, queue-service, result-api, frontend/nginx) SHALL start successfully and be in a running state
 
-### Requirement: Public HTTPS access via DuckDNS and Let's Encrypt
-The system SHALL be accessible over HTTPS at a permanent DuckDNS subdomain (e.g., `anna-results.duckdns.org`) with a valid browser-trusted SSL certificate issued by Let's Encrypt.
+### Requirement: Public HTTPS access via Cloudflare Pages and DuckDNS
+The system SHALL be accessible to students over a Cloudflare Pages URL for the frontend, which communicates securely with the DuckDNS backend API over HTTPS.
 
 #### Scenario: HTTPS URL loads the frontend
-- **WHEN** a user navigates to `https://<subdomain>.duckdns.org` in any modern browser
+- **WHEN** a user navigates to `https://<cloudflare-project>.pages.dev` in any modern browser
 - **THEN** the browser SHALL display no security warnings
 - **AND** the Anna University results frontend (index.html) SHALL load successfully
+
+#### Scenario: Frontend communicates with Backend API securely
+- **WHEN** the frontend makes an API request
+- **THEN** it SHALL point to the absolute URL `https://<subdomain>.duckdns.org/api/...`
+- **AND** the backend Node.js APIs SHALL include CORS headers allowing the Cloudflare Pages origin
 
 #### Scenario: HTTP redirects to HTTPS
 - **WHEN** a user navigates to `http://<subdomain>.duckdns.org`
@@ -49,7 +54,7 @@ The system SHALL serve the results frontend (not the fallback page) when the `go
 
 #### Scenario: Setting go_live makes results accessible
 - **WHEN** `redis-cli SET go_live true` is executed
-- **THEN** students navigating to the root URL SHALL see the results login form
+- **THEN** students navigating to the Cloudflare Pages URL SHALL see the results login form
 - **AND** students SHALL NOT see the fallback "results not yet published" page
 
 ## MODIFIED Requirements

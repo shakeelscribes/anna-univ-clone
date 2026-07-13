@@ -45,24 +45,36 @@
 - [x] 7.2 Add a volume mount for Let's Encrypt certs: `/etc/letsencrypt:/etc/letsencrypt:ro`
 - [x] 7.3 Change the frontend port mapping from `"8080:80"` to `"80:80"` so HTTP redirect works on standard port
 
-## 8. Launch All Services
+## 8. Deploy Frontend to Cloudflare Pages
 
-- [ ] 8.1 Start all Docker services: `docker-compose up -d`
-- [ ] 8.2 Verify all 5 containers are running: `docker ps`
-- [ ] 8.3 Check nginx logs for SSL errors: `docker logs anna_univ_frontend`
+- [ ] 8.1 Go to dash.cloudflare.com -> Pages -> Connect to Git or Direct Upload
+- [ ] 8.2 Upload the `packages/frontend` folder to Cloudflare Pages
+- [ ] 8.3 Note down the generated public URL (e.g., `https://anna-results.pages.dev`)
 
-## 9. Run the Batch Job
+## 9. Update Backend API & Frontend Code
 
-- [ ] 9.1 Navigate to batch directory on the server: `cd packages/batch`
-- [ ] 9.2 Install dependencies: `npm install`
-- [ ] 9.3 Copy or confirm `mock_results.csv` exists in the batch directory
-- [ ] 9.4 Run the batch job: `node index.js mock_results.csv` (takes ~2 minutes for 100k students)
-- [ ] 9.5 Verify output: `docker exec anna_univ_redis redis-cli DBSIZE` should return 100000
+- [x] 9.1 In `packages/queue-service/` and `packages/result-api/`, run `npm install cors`
+- [x] 9.2 Add CORS middleware to both Node.js apps to allow requests from the Cloudflare Pages URL
+- [x] 9.3 In `packages/frontend/app.js` and `captcha-client.js`, update all `fetch()` calls to use absolute URLs
+- [ ] 9.4 Re-upload the updated `packages/frontend` to Cloudflare Pages
 
-## 10. Go Live and Verify
+## 10. Launch All Backend Services
 
-- [ ] 10.1 Set the go_live flag: `docker exec anna_univ_redis redis-cli SET go_live true`
-- [ ] 10.2 Open a browser and navigate to `https://anna-results.duckdns.org` — should load the login form with no security warnings
-- [ ] 10.3 Test with a sample student: Reg No `951822100000`, DOB `28/08/2001` — should successfully queue and display results
-- [ ] 10.4 Test the HTTPS redirect: navigate to `http://anna-results.duckdns.org` — should redirect to HTTPS
-- [ ] 10.5 Share the URL with someone else on a different network to confirm public access works
+- [ ] 10.1 Start all Docker services on Oracle VM: `docker-compose up -d`
+- [ ] 10.2 Verify all 5 containers are running: `docker ps`
+- [ ] 10.3 Check nginx logs for SSL errors: `docker logs anna_univ_frontend`
+
+## 11. Run the Batch Job
+
+- [ ] 11.1 Navigate to batch directory on the server: `cd packages/batch`
+- [ ] 11.2 Install dependencies: `npm install`
+- [ ] 11.3 Copy or confirm `mock_results.csv` exists in the batch directory
+- [ ] 11.4 Run the batch job: `node index.js mock_results.csv` (takes ~2 minutes for 100k students)
+- [ ] 11.5 Verify output: `docker exec anna_univ_redis redis-cli DBSIZE` should return 100000
+
+## 12. Go Live and Verify
+
+- [ ] 12.1 Set the go_live flag: `docker exec anna_univ_redis redis-cli SET go_live true`
+- [ ] 12.2 Open a browser and navigate to your Cloudflare Pages URL (`https://anna-results.pages.dev`)
+- [ ] 12.3 Test with a sample student: Reg No `951822100000`, DOB `28/08/2001` — should successfully queue and display results
+- [ ] 12.4 Share the Cloudflare URL with someone else on a different network to confirm public access works

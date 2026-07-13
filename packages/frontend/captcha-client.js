@@ -20,6 +20,8 @@
 
   // ─── State ────────────────────────────────────────────────────────────────
 
+  const API_BASE_URL = 'https://anna-univ-clone.duckdns.org';
+
   /** Resolved PoW nonce (null until solved) */
   let solvedNonce = null;
 
@@ -101,7 +103,7 @@
 
   async function initCaptcha() {
     try {
-      var resp = await fetch('/api/captcha/challenge');
+      var resp = await fetch(API_BASE_URL + '/api/captcha/challenge');
       if (!resp.ok) throw new Error('Challenge fetch failed: ' + resp.status);
       challengeData = await resp.json();
 
@@ -128,7 +130,7 @@
    */
   async function refreshChallenge() {
     try {
-      var resp = await fetch('/api/captcha/challenge');
+      var resp = await fetch(API_BASE_URL + '/api/captcha/challenge');
       if (!resp.ok) return; // silent — don't warn, don't disrupt
 
       var newChallenge = await resp.json();

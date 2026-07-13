@@ -4,10 +4,15 @@ const path = require('path');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const { issueChallenge } = require('./captcha/pow');
 const { verifyRequest, rejectSilently } = require('./captcha/verify');
 
 const app = express();
+app.use(cors({
+    origin: function (origin, callback) { callback(null, true); },
+    credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 

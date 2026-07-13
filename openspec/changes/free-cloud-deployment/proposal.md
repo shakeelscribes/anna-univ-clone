@@ -4,10 +4,12 @@ The Anna University results portal proof-of-concept is fully functional locally 
 
 ## What Changes
 
-- A new Oracle Cloud Always Free ARM VM is provisioned to host the entire Docker Compose stack
-- DuckDNS provides a free, permanent, publicly accessible subdomain
-- Let's Encrypt (via Certbot) issues a free SSL certificate so HTTPS works (required for the PoW CAPTCHA's WebCrypto API)
-- nginx configuration is updated to serve HTTPS traffic and terminate SSL
+- Cloudflare Pages is used to host the frontend static files for a massive, free global CDN (Decoupled Architecture)
+- A new Oracle Cloud Always Free ARM VM is provisioned to host the backend API (queue-service, result-api, Redis, MinIO)
+- DuckDNS provides a free, permanent, publicly accessible subdomain for the Oracle VM backend API
+- Let's Encrypt (via Certbot) issues a free SSL certificate for the backend (required to prevent Mixed Content errors from the Cloudflare frontend)
+- nginx configuration is updated to serve HTTPS traffic and terminate SSL for the backend API
+- CORS middleware is added to the backend APIs to allow requests from the Cloudflare Pages domain
 - The project is uploaded to the server and the batch job is run with mock data
 - The `go_live` Redis flag is set to make results publicly accessible
 
@@ -15,7 +17,7 @@ The Anna University results portal proof-of-concept is fully functional locally 
 
 ### New Capabilities
 
-- `cloud-deployment`: End-to-end deployment of the Docker Compose stack on Oracle Cloud Always Free ARM, with public HTTPS access via DuckDNS and Let's Encrypt SSL
+- `cloud-deployment`: Decoupled end-to-end deployment. Frontend on Cloudflare Pages. Backend Docker Compose stack on Oracle Cloud Always Free ARM with public HTTPS access via DuckDNS and Let's Encrypt SSL.
 
 ### Modified Capabilities
 
@@ -23,8 +25,10 @@ The Anna University results portal proof-of-concept is fully functional locally 
 
 ## Impact
 
-- **nginx.conf**: Updated to add HTTPS server block with Let's Encrypt certificate paths
+- **nginx.conf**: Updated to add HTTPS server block with Let's Encrypt certificate paths (serves API only)
 - **docker-compose.yml**: Port 443 added, SSL cert volume mount added to frontend service
+- **Code Changes**: 
+  - Backend: Added CORS middleware to `queue-service` and `result-api`
+  - Frontend: `app.js` API fetch URLs updated to absolute paths pointing to DuckDNS
 - **New files**: Deployment scripts and server setup instructions
-- **No application code changes**: The queue-service, result-api, Redis, and MinIO remain unchanged
-- **Infrastructure**: Oracle Cloud account required (free, needs one-time debit card verification)
+- **Infrastructure**: Oracle Cloud account (free) and Cloudflare account (free) required

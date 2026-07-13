@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment Variables
 .env
@@ -8,6 +7,7 @@ package-lock.json
 
 # Generated Data
 packages/batch/mock-s3/
+packages/batch/*.csv
 
 # Temporary and IDE Files
 _docx_tmp/

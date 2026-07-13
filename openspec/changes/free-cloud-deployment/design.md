@@ -38,8 +38,12 @@ The critical constraint: the PoW CAPTCHA uses `crypto.subtle.digest` (WebCrypto 
 - Alternative considered: Self-signed certificate — rejected, browsers will show security warnings that will confuse students.
 
 **Decision 4: nginx handles SSL termination at the container layer**
-- Rationale: nginx already serves as the frontend container and reverse proxy. Adding SSL termination here keeps the architecture identical to the existing local setup. The Let's Encrypt certificates are mounted into the nginx container as a read-only volume.
-- The existing `nginx.conf` needs a new `server` block for port 443 with `ssl_certificate` directives.
+- Rationale: nginx already serves as the backend reverse proxy. The Let's Encrypt certificates are mounted into the nginx container as a read-only volume.
+- The existing `nginx.conf` needs a new `server` block for port 443 with `ssl_certificate` directives, routing traffic to `/api`.
+
+**Decision 4.5: Cloudflare Pages for Frontend (Decoupled Architecture)**
+- Rationale: Serving static HTML/CSS/JS from the Oracle VM wastes its bandwidth and CPU. By deploying the frontend to Cloudflare Pages (free), 100% of the static file traffic is absorbed by a massive global CDN. The Oracle VM is freed up to only handle API requests.
+- Note: This requires updating the frontend to make API calls to absolute URLs (`https://anna-univ-clone.duckdns.org/api/...`) and adding CORS to the Node.js backend.
 
 **Decision 5: Batch job runs once on the server using the existing mock CSV**
 - Rationale: The `mock_results.csv` already contains 100,000 realistic student records in the correct Anna University format. The existing `node index.js mock_results.csv` batch job generates all pre-built JSON files into `mock-s3/`. No changes to batch logic needed.
@@ -65,6 +69,8 @@ The critical constraint: the PoW CAPTCHA uses `crypto.subtle.digest` (WebCrypto 
 9. Start all services: `docker-compose up -d`
 10. Run batch job: `node index.js mock_results.csv`
 11. Set go_live: `docker exec anna_univ_redis redis-cli SET go_live true`
-12. Verify HTTPS access and full queue flow
+12. Deploy `packages/frontend` to Cloudflare Pages and get the public URL
+13. Update frontend `app.js` to point to the DuckDNS API URL and add CORS middleware in the Node.js backend to allow the Cloudflare URL
+14. Verify public access and full queue flow via the Cloudflare Pages URL
 
 **Rollback:** If anything breaks, `docker-compose down` stops all services. The VM can be terminated from Oracle Cloud console with no lasting consequences (Always Free, no charges).

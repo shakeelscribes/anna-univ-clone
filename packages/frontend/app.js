@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let savedRegNo = '';
     let savedDob = '';
 
+    const API_BASE_URL = 'https://anna-univ-clone.duckdns.org';
+
     // DOM Elements
     const sections = {
         init: document.getElementById('init-section'),
@@ -62,9 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("CAPTCHA solved silently.");
 
             // Join the queue, submitting credentials + CAPTCHA proof
-            const res = await fetch('/api/queue/join', {
+            const res = await fetch(API_BASE_URL + '/api/queue/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     reg_no: savedRegNo,
                     dob: savedDob,
@@ -102,7 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function startPolling() {
         pollInterval = setInterval(async () => {
             try {
-                const res = await fetch(`/api/queue/status?token=${currentQueueToken}`);
+                const res = await fetch(API_BASE_URL + `/api/queue/status?token=${currentQueueToken}`, {
+                    credentials: 'include'
+                });
                 if (!res.ok) throw new Error("Status check failed");
                 
                 const data = await res.json();
@@ -133,7 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Note: In production, the result API would be a different host/port, but here we'll assume it's routed.
             // For local dev, we will fetch from localhost:3001
-            const res = await fetch(`/api/result?token=${resultToken}`);
+            const res = await fetch(API_BASE_URL + `/api/result?token=${resultToken}`, {
+                credentials: 'include'
+            });
             if (!res.ok) {
                 const errData = await res.json();
                 throw new Error(errData.error || "Failed to fetch result");
