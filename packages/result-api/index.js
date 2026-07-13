@@ -6,7 +6,10 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: function (origin, callback) { callback(null, true); },
+    credentials: true
+}));
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-development-only';
 

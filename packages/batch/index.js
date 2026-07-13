@@ -19,30 +19,20 @@ async function runBatch(csvFilePath) {
     console.log(`Starting Result Pre-Generation Batch Job...`);
     const startTime = Date.now();
     
-    // 1. Ingestion
-    console.log(`\n[1/5] Ingesting data from ${csvFilePath}...`);
-    const { records, skipped, totalRows } = await ingestData(csvFilePath);
-    console.log(`Parsed ${totalRows} rows. Valid: ${records.length}, Skipped: ${skipped.length}`);
-
-    // 2. Setup Redis Indexer
-    console.log(`\n[2/5] Connecting to Redis...`);
+    // 1-4. Ingestion, Generation, S3 Upload, & Redis Indexing
+    console.log(`\n[1-4/5] Streaming CSV, generating JSON, sharding to Object Storage, and pipelining to Redis...`);
     const indexer = new IndexWriter();
-    const batchIndexes = [];
-
-    // 3. Generate & Upload
-    console.log(`\n[3/5] Generating JSON and uploading to Object Storage...`);
+    const batchIndexes = []; // Used for CDN warmup
     let generatedCount = 0;
-    
-    for (const record of records) {
+
+    for await (const record of ingestData(csvFilePath)) {
         const { current_semester, json } = generateResultJson(record);
         const key = await uploadToMockS3(MOCK_S3_PATH, record.reg_no, current_semester, json);
+        
+        await indexer.writeIndex(record.reg_no, key);
         batchIndexes.push({ regNo: record.reg_no, resultKey: key });
         generatedCount++;
     }
-
-    // 4. Redis Index Writing
-    console.log(`\n[4/5] Writing ${batchIndexes.length} entries to Redis KV Store...`);
-    await indexer.writeBatchIndexes(batchIndexes);
 
     // 5. CDN Cache Warm-up
     console.log(`\n[5/5] Warming CDN Cache...`);
@@ -66,8 +56,6 @@ async function runBatch(csvFilePath) {
     console.log(`          BATCH JOB SUMMARY REPORT               `);
     console.log(`=================================================`);
     console.log(`Duration          : ${durationMs} ms`);
-    console.log(`Total Rows Parsed : ${totalRows}`);
-    console.log(`Records Skipped   : ${skipped.length}`);
     console.log(`Files Generated   : ${generatedCount}`);
     console.log(`KV Entries Written: ${batchIndexes.length}`);
     console.log(`CDN URLs Warmed   : ${warmedCount} (Failed: ${warmFailedCount})`);

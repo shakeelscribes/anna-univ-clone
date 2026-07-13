@@ -137,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         queuePositionEl.textContent = "Admitted! Fetching results...";
         try {
             // Note: In production, the result API would be a different host/port, but here we'll assume it's routed.
-            // For local dev, we will fetch from localhost:3001
             const res = await fetch(API_BASE_URL + `/api/result?token=${resultToken}`, {
                 credentials: 'include'
             });

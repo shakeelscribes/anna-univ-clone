@@ -82,7 +82,11 @@ function generateResultJson(record) {
  * Simulates uploading the generated JSON to S3 by writing it to the local `mock-s3/` folder.
  */
 async function uploadToMockS3(bucketPath, regNo, semester, jsonContent) {
-    const key = `results/${regNo}/${semester}/result.json`;
+    const strReg = String(regNo);
+    // Splits the 12-digit register number into chunks of 3 (e.g. 951/822/100/000)
+    const shardedReg = strReg.match(/.{1,3}/g).join('/'); 
+    
+    const key = `results/${shardedReg}/${semester}/result.json`;
     const fullPath = path.join(bucketPath, key);
     
     // Ensure the directory exists

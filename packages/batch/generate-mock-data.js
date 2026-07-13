@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-// Generate 100,000 students to keep file size manageable for testing,
-// but enough to demonstrate scale (will produce ~700,000 rows).
-const TOTAL_STUDENTS = 100000;
+// Generate 1,000,000 students to simulate full production scale
+// (will produce ~7,000,000 rows).
+const TOTAL_STUDENTS = 1000000;
 const OUTPUT_FILE = path.join(__dirname, 'mock_results.csv');
 
 const stream = fs.createWriteStream(OUTPUT_FILE);
