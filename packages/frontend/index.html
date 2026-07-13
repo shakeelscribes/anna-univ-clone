@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anna University - Result Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Anna University</h1>
+        <p>Office of the Controller of Examinations</p>
+    </header>
+
+    <main>
+        <!-- State 1: Initialization & CAPTCHA (Hidden from user, but we show a loading spinner) -->
+        <div id="init-section" class="container section active">
+            <div class="spinner"></div>
+            <h2>Initializing Secure Connection</h2>
+            <p>Please wait while we perform a quick security check...</p>
+        </div>
+
+        <!-- State 2: Waiting Room -->
+        <div id="queue-section" class="container section">
+            <div class="spinner"></div>
+            <h2>Waiting Room</h2>
+            <p>You are in a virtual queue. Please do not refresh this page.</p>
+            <div class="queue-info">
+                <p>Your current position:</p>
+                <div id="queue-position" class="queue-position">--</div>
+            </div>
+        </div>
+
+        <!-- State 3: Login Form -->
+        <div id="login-section" class="container section">
+            <h2>View Results</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-light);">Enter your credentials to view your exam results.</p>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="regno">Registration Number</label>
+                    <input type="text" id="regno" required placeholder="e.g. 312320104001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" required>
+                </div>
+                
+                <div id="login-error" class="error-msg">Invalid credentials. Please try again.</div>
+                
+                <button type="submit" id="login-btn">Fetch Result</button>
+            </form>
+        </div>
+
+        <!-- State 4: Results Dashboard -->
+        <div id="results-section" class="container section" style="max-width: 800px;">
+            <h2 style="margin-bottom: 2rem;">Examination Results</h2>
+            
+            <div class="student-info">
+                <p><strong>Name:</strong> <span id="res-name"></span></p>
+                <p><strong>Register Number:</strong> <span id="res-regno"></span></p>
+                <p><strong>Branch:</strong> <span id="res-branch"></span></p>
+            </div>
+            
+            <table class="marks-table">
+                <thead>
+                    <tr>
+                        <th>Semester</th>
+                        <th>Subject Code</th>
+                        <th>Grade</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody id="marks-tbody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+            
+            <div class="result-footer" style="margin-bottom: 2rem;">
+                <div>Overall Status: <strong id="res-status" style="color: var(--primary-blue);"></strong></div>
+                <button class="print-btn" onclick="window.print()">Print Result</button>
+            </div>
+
+            <div class="legend-box" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; background: #fafafa; font-size: 0.85rem; color: #555;">
+                <h4 style="margin-top: 0; margin-bottom: 10px;">Legends Used</h4>
+                <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <li><strong>WHI</strong> : Withheld for want of Internal Mark</li>
+                    <li><strong>WHE</strong> : Withheld for want of Practical Mark</li>
+                    <li><strong>WH1</strong> : Withheld for suspected Malpractice</li>
+                    <li><strong>RA</strong> : Re-appearance</li>
+                    <li><strong>AB</strong> : Absent</li>
+                    <li><strong>SA</strong> : Shortage of Attendance</li>
+                    <li><strong>WD</strong> : Withdrawal</li>
+                    <li><strong>PDEB</strong>: Permanently Debarred</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Anna University. All Rights Reserved.
+    </footer>
+
+    <!-- Include the CAPTCHA client library -->
+    <script src="captcha-client.js"></script>
+    <!-- Include the main application logic -->
+    <script src="app.js"></script>
+</body>
+</html>

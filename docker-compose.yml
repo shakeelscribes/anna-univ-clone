@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Centralized Key-Value Store for Queue & Index Mapping
+  redis:
+    image: redis:7.0-alpine
+    container_name: anna_univ_redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Local S3-compatible Object Storage for Results (JSON + PDF)
+  minio:
+    image: minio/minio
+    container_name: anna_univ_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: "anna_admin"
+      MINIO_ROOT_PASSWORD: "anna_password_123"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  # Setup bucket in MinIO automatically
+  minio_setup:
+    image: minio/mc
+    container_name: anna_univ_minio_setup
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 anna_admin anna_password_123;
+      /usr/bin/mc mb myminio/results --ignore-existing;
+      /usr/bin/mc anonymous set public myminio/results;
+      exit 0;
+      "
+
+
+  queue-service:
+    build:
+      context: ./packages/queue-service
+    container_name: anna_univ_queue
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=super-secret-key-for-development-only
+      - CAPTCHA_SECRET=dev-secret-captcha
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  result-api:
+    build:
+      context: ./packages/result-api
+    container_name: anna_univ_result_api
+    ports:
+      - "3001:3001"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=super-secret-key-for-development-only
+    volumes:
+      - ./packages/batch/mock-s3:/batch/mock-s3:ro
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    container_name: anna_univ_frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./packages/frontend:/usr/share/nginx/html:ro
+      - ./packages/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  minio_data:

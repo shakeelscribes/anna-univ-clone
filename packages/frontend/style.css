@@ -1,0 +1,273 @@
+/* Anna University Color Palette & Variables */
+:root {
+  --primary-blue: #0A3663; /* Anna Univ deep blue */
+  --secondary-blue: #1A5B9C;
+  --accent-gold: #D4AF37;
+  --text-dark: #333333;
+  --text-light: #666666;
+  --bg-color: #F4F7F6;
+  --white: #FFFFFF;
+  --border-color: #E0E0E0;
+  --success: #28a745;
+  --danger: #dc3545;
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  border-bottom: 4px solid var(--accent-gold);
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+/* Main Container */
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.container {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 600px;
+  padding: 2.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* Sections */
+.section {
+  display: none; /* Hidden by default, toggled via JS */
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Spinner / Loading */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(10, 54, 99, 0.1);
+  border-left-color: var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Typography */
+h2 {
+  color: var(--primary-blue);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+input[type="text"], input[type="date"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus, input[type="date"]:focus {
+  outline: none;
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 3px rgba(26, 91, 156, 0.1);
+}
+
+button {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: var(--secondary-blue);
+}
+
+button:disabled {
+  background-color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.error-msg {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+/* Queue Info */
+.queue-info {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background-color: rgba(10, 54, 99, 0.05);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.queue-position {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin: 0.5rem 0;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+/* Results Dashboard Specifics will go here */
+#results-container {
+  max-width: 800px;
+}
+
+.student-info {
+  text-align: left;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.student-info p {
+  margin-bottom: 0.5rem;
+}
+
+.marks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.marks-table th, .marks-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.marks-table th {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.marks-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.result-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.gpa-display {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+.print-btn {
+  width: auto;
+  background-color: #28a745;
+}
+
+.print-btn:hover {
+  background-color: #218838;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: var(--white);
+  }
+  header, footer, .print-btn {
+    display: none !important;
+  }
+  .container {
+    box-shadow: none;
+    padding: 0;
+    max-width: 100%;
+  }
+  .marks-table th {
+    background-color: #eee !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+  }
+}

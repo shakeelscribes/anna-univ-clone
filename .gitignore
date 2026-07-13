@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment Variables
+.env
+.env.*
+
+# Generated Data
+packages/batch/mock-s3/
+
+# Temporary and IDE Files
+_docx_tmp/
+*.zip
+.vscode/
+.idea/
+.DS_Store
+*.log
+
+# Agent Commands
+.agent/
